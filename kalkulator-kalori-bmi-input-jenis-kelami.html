@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Kalkulator Kalori & BMI Pro</title>
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --bg-card: #131b2e;
+      --bg-card-sub: #1b2640;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --primary-glow: rgba(16, 185, 129, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-orange: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --border: #233252;
+      --radius: 14px;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-bottom: 84px;
+      line-height: 1.5;
+    }
+
+    /* Top App Bar */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      background: rgba(11, 15, 25, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 18px;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      color: #000;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #fff;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .badge-status {
+      background: var(--bg-card-sub);
+      border: 1px solid var(--border);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    /* Container Content */
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 16px 14px;
+    }
+
+    .section-title-wrap {
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Card System */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent-cyan);
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrap input, .input-wrap select {
+      width: 100%;
+      background: var(--bg-card-sub);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 12px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .input-wrap input:focus, .input-wrap select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .input-suffix {
+      position: absolute;
+      right: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    select {
+      cursor: pointer;
+      padding-right: 32px !important;
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: 12px;
+      pointer-events: none;
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    /* Gender Toggle Switch */
+    .gender-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .gender-btn {
+      background: var(--bg-card-sub);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .gender-btn.active {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: 10px;
+      border: none;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #059669);
+      color: #000;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+      filter: brightness(1.1);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card-sub);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:active {
+      background: #28375a;
+    }
+
+    .btn-sm {
+      padding: 7px 12px;
+      font-size: 12px;
+      border-radius: 8px;
+      width: auto;
+    }
+
+    /* Stat Highlight Display */
+    .highlight-banner {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.12));
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: var(--radius);
+      padding: 18px;
+      text-align: center;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .highlight-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .highlight-value {
+      font-size: 38px;
+      font-weight: 800;
+      color: #fff;
+      margin: 4px 0;
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+
+    .highlight-unit {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .highlight-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Grid Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-box {
+      background: var(--bg-card-sub);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .stat-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 6px;
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* BMI Gauge Bar */
+    .bmi-gauge-wrap {
+      margin-top: 10px;
+    }
+
+    .bmi-scale-bar {
+      height: 10px;
+      border-radius: 5px;
+      background: linear-gradient(to right, #3b82f6 0%, #10b981 25%, #f59e0b 60%, #ef4444 100%);
+      position: relative;
+      margin: 14px 0 6px;
+    }
+
+    .bmi-indicator {
+      position: absolute;
+      top: -4px;
+      width: 4px;
+      height: 18px;
+      background: #fff;
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.8);
+      transform: translateX(-50%);
+      transition: left 0.4s ease;
+    }
+
+    .bmi-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* Macro Bar */
+    .macro-bar-wrap {
+      display: flex;
+      height: 12px;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 12px 0 14px;
+      background: var(--bg-card-sub);
+    }
+
+    .macro-bar-seg {
+      height: 100%;
+      transition: width 0.4s ease;
+    }
+
+    .macro-bar-seg.prot { background: #38bdf8; }
+    .macro-bar-seg.carb { background: #fbbf24; }
+    .macro-bar-seg.fat { background: #f87171; }
+
+    .macro-legend {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .macro-card {
+      background: var(--bg-card-sub);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .macro-tag {
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 2px;
+    }
+
+    .macro-tag.prot { color: #38bdf8; }
+    .macro-tag.carb { color: #fbbf24; }
+    .macro-tag.fat { color: #f87171; }
+
+    .macro-num {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .macro-cal {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* Water & Habit Box */
+    .water-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .water-icon {
+      font-size: 32px;
+      background: rgba(6, 182, 212, 0.15);
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* History & Lists */
+    .history-item {
+      background: var(--bg-card-sub);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-info h4 {
+      font-size: 14px;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .history-info p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .history-badge {
+      text-align: right;
+    }
+
+    .history-cal {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .history-bmi {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Meal Split Card */
+    .meal-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .meal-row:last-child {
+      border-bottom: none;
+    }
+
+    .meal-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .meal-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .meal-cal {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-align: right;
+    }
+
+    /* Guide list */
+    .guide-box {
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .guide-box:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .guide-head {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .guide-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Table styles for WHO BMI */
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .custom-table th, .custom-table td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .custom-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(19, 27, 46, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+      z-index: 50;
+      max-width: 100%;
+    }
+
+    .nav-tab {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 2px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-tab.active {
+      color: var(--primary);
+    }
+
+    .nav-tab .tab-icon {
+      font-size: 20px;
+      margin-bottom: 2px;
+    }
+
+    .nav-tab .tab-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+
+    /* Utility */
+    .hidden {
+      display: none !important;
+    }
+
+    .text-success { color: var(--primary); }
+    .text-warning { color: var(--accent-orange); }
+    .text-danger { color: var(--accent-red); }
+    .text-info { color: var(--accent-cyan); }
+    .text-blue { color: var(--accent-blue); }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .tag-green { background: rgba(16, 185, 129, 0.15); color: var(--primary); }
+    .tag-orange { background: rgba(245, 158, 11, 0.15); color: var(--accent-orange); }
+    .tag-red { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+    .tag-blue { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 86px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid var(--primary);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 99;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top App Bar -->
+  <header class="top-bar">
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div class="brand-title">NutriCalc Pro</div>
+        <div class="brand-subtitle">Kalkulator Kalori & BMI</div>
+      </div>
+    </div>
+    <div class="badge-status" id="live-indicator">● Offline Siap</div>
+  </header>
+
+  <!-- ================= TAB 1: KALKULATOR ================= -->
+  <main id="section-calc" class="container">
+    <div class="section-title-wrap">
+      <h1 class="section-title">🧮 Hitung Kalori & Tubuh</h1>
+      <p class="section-desc">Kalkulasi presisi standar medis (Mifflin-St Jeor & WHO Asia).</p>
+    </div>
+
+    <!-- Form Input Card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">1. Profil Fisik Anda</span>
+      </div>
+
+      <!-- Gender -->
+      <div class="form-group">
+        <label>Jenis Kelamin</label>
+        <div class="gender-grid">
+          <button type="button" class="gender-btn active" id="btn-male" onclick="setGender('male')">
+            <span>👨</span> Pria
+          </button>
+          <button type="button" class="gender-btn" id="btn-female" onclick="setGender('female')">
+            <span>👩</span> Wanita
+          </button>
+        </div>
+      </div>
+
+      <!-- Age, Height, Weight -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="inp-age">Umur</label>
+          <div class="input-wrap">
+            <input type="number" id="inp-age" value="25" min="10" max="100" inputmode="numeric">
+            <span class="input-suffix">th</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inp-height">Tinggi Badan</label>
+          <div class="input-wrap">
+            <input type="number" id="inp-height" value="170" min="80" max="250" inputmode="numeric">
+            <span class="input-suffix">cm</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inp-weight">Berat Badan</label>
+        <div class="input-wrap">
+          <input type="number" id="inp-weight" value="68" min="25" max="300" step="0.5" inputmode="decimal">
+          <span class="input-suffix">kg</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inp-activity">Tingkat Aktivitas Harian</label>
+        <div class="input-wrap">
+          <select id="inp-activity">
+            <option value="1.2">Sedentary (Jarang gerak / kerja meja)</option>
+            <option value="1.375" selected>Ringan (Olahraga santai 1-3 hari/mgg)</option>
+            <option value="1.55">Sedang (Olahraga aktif 3-5 hari/mgg)</option>
+            <option value="1.725">Sangat Aktif (Latihan keras 6-7 hari/mgg)</option>
+            <option value="1.9">Ekstrem (Atlet / pekerjaan fisik berat)</option>
+          </select>
+          <span class="select-arrow">▼</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inp-goal">Target Berat Badan</label>
+        <div class="input-wrap">
+          <select id="inp-goal">
+            <option value="-600">🔥 Turun Cepat (-600 kkal / ~0.6 kg per mgg)</option>
+            <option value="-350" selected>📉 Turun Santai & Sehat (-350 kkal / ~0.35 kg)</option>
+            <option value="0">⚖️ Jaga Berat Badan (Maintain Kalori)</option>
+            <option value="350">📈 Naik Bersih / Lean Bulk (+350 kkal)</option>
+            <option value="600">💪 Naik Cepat / Surplus Ekstra (+600 kkal)</option>
+          </select>
+          <span class="select-arrow">▼</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-primary" onclick="calculateAll(true)">
+        <span>Hitung & Simpan Riwayat</span> ⚡
+      </button>
+    </div>
+
+    <!-- HASIL KALKULASI -->
+    <div id="result-box">
+      <!-- Target Banner -->
+      <div class="highlight-banner">
+        <div class="highlight-label">Target Kalori Harian</div>
+        <div class="highlight-value" id="res-target-cal">2.150</div>
+        <div class="highlight-unit">kkal / hari</div>
+        <div class="highlight-note" id="res-goal-note">Defisit kalori moderat untuk turun berat badan bertahap.</div>
+      </div>
+
+      <!-- BMI Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Indeks Massa Tubuh (BMI)</span>
+          <span class="tag tag-green" id="res-bmi-badge">Normal</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <div>
+            <span style="font-size: 28px; font-weight: 800; color:#fff;" id="res-bmi-val">23.5</span>
+            <span style="font-size: 13px; color: var(--text-muted);"> kg/m²</span>
+          </div>
+          <div style="text-align: right; font-size: 12px; color: var(--text-muted);" id="res-ideal-weight">
+            Ideal: 53.5 - 66.2 kg
+          </div>
+        </div>
+
+        <div class="bmi-gauge-wrap">
+          <div class="bmi-scale-bar">
+            <div class="bmi-indicator" id="bmi-pointer" style="left: 45%;"></div>
+          </div>
+          <div class="bmi-labels">
+            <span>Kurus &lt;18.5</span>
+            <span>Normal 18.5-22.9</span>
+            <span>Berlebih 23-24.9</span>
+            <span>Obesitas ≥25</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BMR & TDEE Grid -->
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">BMR (Mifflin)</div>
+          <div class="stat-val" id="res-bmr">1.650 <span style="font-size:12px; font-weight: normal;">kkal</span></div>
+          <div class="stat-sub text-info">Energi basal saat tidur/istirahat</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">TDEE (Total Burn)</div>
+          <div class="stat-val" id="res-tdee">2.268 <span style="font-size:12px; font-weight: normal;">kkal</span></div>
+          <div class="stat-sub text-warning">Total bakar kalori per hari</div>
+        </div>
+      </div>
+
+      <!-- Makronutrisi Harian -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Rekomendasi Makronutrisi</span>
+          <span style="font-size: 11px; color: var(--text-muted);">Rasio Seimbang</span>
+        </div>
+
+        <div class="macro-bar-wrap">
+          <div class="macro-bar-seg prot" id="bar-prot" style="width: 25%;"></div>
+          <div class="macro-bar-seg carb" id="bar-carb" style="width: 50%;"></div>
+          <div class="macro-bar-seg fat" id="bar-fat" style="width: 25%;"></div>
+        </div>
+
+        <div class="macro-legend">
+          <div class="macro-card">
+            <div class="macro-tag prot">PROTEIN</div>
+            <div class="macro-num" id="res-prot">136g</div>
+            <div class="macro-cal" id="res-prot-cal">544 kkal (25%)</div>
+          </div>
+          <div class="macro-card">
+            <div class="macro-tag carb">KARBO</div>
+            <div class="macro-num" id="res-carb">268g</div>
+            <div class="macro-cal" id="res-carb-cal">1072 kkal (50%)</div>
+          </div>
+          <div class="macro-card">
+            <div class="macro-tag fat">LEMAK</div>
+            <div class="macro-num" id="res-fat">59g</div>
+            <div class="macro-cal" id="res-fat-cal">534 kkal (25%)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Water Need Card -->
+      <div class="water-box">
+        <div class="water-icon">💧</div>
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase;">Target Hidrasi Minimal</div>
+          <div style="font-size: 20px; font-weight: 800; color: #fff; margin: 2px 0;">
+            <span id="res-water-liter">2.6</span> Liter <span style="font-size: 14px; font-weight: 500; color: var(--text-muted);">(±<span id="res-water-glass">10</span> gelas)</span>
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted);">Disesuaikan dengan berat badan & intensitas aktivitas.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= TAB 2: PORSI MAKAN ================= -->
+  <section id="section-meals" class="container hidden">
+    <div class="section-title-wrap">
+      <h2 class="section-title">🍽️ Pola & Porsi Makan</h2>
+      <p class="section-desc">Rekomendasi pembagian alokasi kalori sepanjang hari.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Jadwal Makan 3+1 (Standar)</span>
+        <span class="tag tag-blue" id="split-total-badge">2.150 kkal</span>
+      </div>
+
+      <div class="meal-row">
+        <div>
+          <div class="meal-name">🌅 Sarapan Pagi (25%)</div>
+          <div class="meal-sub">Tinggi protein & serat agar kenyang tahan lama</div>
+        </div>
+        <div>
+          <div class="meal-cal" id="meal-bfast">537 kkal</div>
+          <div class="meal-sub" id="meal-bfast-prot">±34g Prot</div>
+        </div>
+      </div>
+
+      <div class="meal-row">
+        <div>
+          <div class="meal-name">☀️ Makan Siang (35%)</div>
+          <div class="meal-sub">Porsi utama: Karbo kompleks + Lauk + Sayur</div>
+        </div>
+        <div>
+          <div class="meal-cal" id="meal-lunch">752 kkal</div>
+          <div class="meal-sub" id="meal-lunch-prot">±48g Prot</div>
+        </div>
+      </div>
+
+      <div class="meal-row">
+        <div>
+          <div class="meal-name">🌙 Makan Malam (30%)</div>
+          <div class="meal-sub">Ringan, rendah minyak & kurangi gula berlebih</div>
+        </div>
+        <div>
+          <div class="meal-cal" id="meal-dinner">645 kkal</div>
+          <div class="meal-sub" id="meal-dinner-prot">±41g Prot</div>
+        </div>
+      </div>
+
+      <div class="meal-row">
+        <div>
+          <div class="meal-name">🍎 Camilan / Snack Sehat (10%)</div>
+          <div class="meal-sub">Buah, yogurt yunani, telur rebus / kacang almond</div>
+        </div>
+        <div>
+          <div class="meal-cal" id="meal-snack">215 kkal</div>
+          <div class="meal-sub" id="meal-snack-prot">±13g Prot</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tips Nutrisi Cepat -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">💡 Panduan Piring Sehat (T-Plate)</span>
+      </div>
+      <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+        <p style="margin-bottom: 8px;">🥗 <strong>½ Piring Sayur & Buah:</strong> Sumber mikronutrisi, antioksidan, dan serat agar pencernaan lancar.</p>
+        <p style="margin-bottom: 8px;">🍗 <strong>¼ Piring Lauk Protein:</strong> Dada ayam, telur, ikan laut, tahu, tempe, atau daging tanpa lemak.</p>
+        <p>🍚 <strong>¼ Piring Karbohidrat:</strong> Nasi merah, kentang rebus, oatmeal, ubi jalar, atau nasi putih porsi terkontrol.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TAB 3: RIWAYAT ================= -->
+  <section id="section-history" class="container hidden">
+    <div class="section-title-wrap">
+      <h2 class="section-title">📊 Riwayat Perhitungan</h2>
+      <p class="section-desc">Data tersimpan otomatis di memori lokal peramban Anda.</p>
+    </div>
+
+    <div style="display:flex; justify-content: flex-end; margin-bottom: 12px;">
+      <button class="btn btn-secondary btn-sm" onclick="clearHistory()">🗑️ Hapus Semua Riwayat</button>
+    </div>
+
+    <div id="history-list">
+      <!-- Diisi oleh Javascript -->
+    </div>
+  </section>
+
+  <!-- ================= TAB 4: PANDUAN ================= -->
+  <section id="section-guide" class="container hidden">
+    <div class="section-title-wrap">
+      <h2 class="section-title">📖 Panduan & Rumus Medis</h2>
+      <p class="section-desc">Pelajari dasar ilmiah di balik kalkulator ini.</p>
+    </div>
+
+    <div class="card">
+      <div class="guide-box">
+        <div class="guide-head">1. Rumus Mifflin-St Jeor (BMR)</div>
+        <div class="guide-text">
+          Dianggap sebagai salah satu rumus paling akurat oleh <em>Academy of Nutrition and Dietetics</em>:<br>
+          • <strong>Pria:</strong> (10 × BB kg) + (6.25 × TB cm) - (5 × Umur) + 5<br>
+          • <strong>Wanita:</strong> (10 × BB kg) + (6.25 × TB cm) - (5 × Umur) - 161
+        </div>
+      </div>
+
+      <div class="guide-box">
+        <div class="guide-head">2. Apa itu TDEE?</div>
+        <div class="guide-text">
+          <em>Total Daily Energy Expenditure</em> adalah total kalori yang Anda bakar per hari, menggabungkan BMR dengan faktor aktivitas fisik (1.2 s/d 1.9).
+        </div>
+      </div>
+
+      <div class="guide-box">
+        <div class="guide-head">3. Standar Klasifikasi BMI Kemenkes / Asia-Pasifik</div>
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Kategori</th>
+              <th>Rentang BMI</th>
+              <th>Risiko</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tag tag-blue">Underweight</span></td>
+              <td>&lt; 18.5</td>
+              <td>Malnutrisi & Imun</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-green">Normal / Ideal</span></td>
+              <td>18.5 – 22.9</td>
+              <td>Paling Rendah</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-orange">Overweight</span></td>
+              <td>23.0 – 24.9</td>
+              <td>Meningkat</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-red">Obesitas I & II</span></td>
+              <td>≥ 25.0</td>
+              <td>Tinggi (Kardiovaskular)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="guide-box">
+        <div class="guide-head">4. Berapa defisit kalori yang aman?</div>
+        <div class="guide-text">
+          Defisit yang disarankan adalah <strong>300 - 600 kkal</strong> per hari. Penurunan berat badan yang aman & berkelanjutan berkisar antara <strong>0.3 - 0.7 kg per minggu</strong> agar massa otot tidak banyak menyusut.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TAB 5: TENTANG ================= -->
+  <section id="section-about" class="container hidden">
+    <div class="section-title-wrap">
+      <h2 class="section-title">ℹ️ Tentang Aplikasi</h2>
+      <p class="section-desc">Kalkulator kesehatan mandiri, cepat, dan 100% privat.</p>
+    </div>
+
+    <div class="card">
+      <div style="display:flex; align-items:center; gap: 14px; margin-bottom: 14px;">
+        <div class="brand-icon" style="width:46px; height:46px; font-size:24px;">⚡</div>
+        <div>
+          <h3 style="color:#fff; font-size: 16px;">NutriCalc Pro v2.4</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Offline-First Health Calculator</p>
+        </div>
+      </div>
+
+      <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+        Aplikasi web 1 file yang dirancang untuk membantu Anda memantau kebutuhan nutrisi harian, komposisi makronutrisi, serta indeks massa tubuh tanpa memerlukan koneksi internet ataupun registrasi akun.
+      </p>
+
+      <div style="background: var(--bg-card-sub); padding: 12px; border-radius: 10px; font-size: 12px; border: 1px solid var(--border);">
+        🔒 <strong>Privasi 100% Terjaga:</strong> Seluruh data tubuh dan riwayat hanya disimpan secara lokal di browser perangkat Anda (localStorage) dan tidak pernah dikirim ke server manapun.
+      </div>
+    </div>
+
+    <div class="card" style="text-align: center;">
+      <p style="font-size: 12px; color: var(--text-muted);">
+        Dibuat untuk memudahkan gaya hidup sehat & seimbang.<br>
+        © 2025 NutriCalc Pro • Offline Web Application
+      </p>
+    </div>
+  </section>
+
+  <!-- Toast Message -->
+  <div id="toast" class="toast">
+    <span>✅</span> <span id="toast-msg">Perhitungan berhasil disimpan!</span>
+  </div>
+
+  <!-- Bottom App Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" onclick="switchTab('calc')">
+      <span class="tab-icon">🧮</span>
+      <span class="tab-label">Hitung</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('meals')">
+      <span class="tab-icon">🍽️</span>
+      <span class="tab-label">Porsi</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('history')">
+      <span class="tab-icon">📊</span>
+      <span class="tab-label">Riwayat</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('guide')">
+      <span class="tab-icon">📖</span>
+      <span class="tab-label">Panduan</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('about')">
+      <span class="tab-icon">ℹ️</span>
+      <span class="tab-label">Tentang</span>
+    </button>
+  </nav>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // State Aplikasi
+    let currentGender = 'male';
+    const STORAGE_KEY = 'nutricalc_history_v1';
+    const LAST_INPUT_KEY = 'nutricalc_last_input_v1';
+
+    // Format angka ribuan Indonesia
+    function formatNumber(num) {
+      return Math.round(num).toLocaleString('id-ID');
+    }
+
+    // Set gender toggle
+    function setGender(gender) {
+      currentGender = gender;
+      document.getElementById('btn-male').classList.toggle('active', gender === 'male');
+      document.getElementById('btn-female').classList.toggle('active', gender === 'female');
+      calculateAll(false);
+    }
+
+    // Tab switcher
+    function switchTab(tabName) {
+      const sections = ['calc', 'meals', 'history', 'guide', 'about'];
+      sections.forEach(s => {
+        const el = document.getElementById(`section-${s}`);
+        if (el) el.classList.toggle('hidden', s !== tabName);
+      });
+
+      const navBtns = document.querySelectorAll('.nav-tab');
+      navBtns.forEach((btn, idx) => {
+        btn.classList.toggle('active', sections[idx] === tabName);
+      });
+
+      if (tabName === 'history') {
+        renderHistory();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Tampilkan Toast
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      const tMsg = document.getElementById('toast-msg');
+      tMsg.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => {
+        t.classList.remove('show');
+      }, 2500);
+    }
+
+    // Kalkulasi Utama
+    function calculateAll(shouldSave = false) {
+      const age = parseFloat(document.getElementById('inp-age').value) || 25;
+      const height = parseFloat(document.getElementById('inp-height').value) || 170;
+      const weight = parseFloat(document.getElementById('inp-weight').value) || 68;
+      const activityMult = parseFloat(document.getElementById('inp-activity').value) || 1.375;
+      const goalOffset = parseFloat(document.getElementById('inp-goal').value) || 0;
+
+      // 1. Hitung BMR (Mifflin-St Jeor)
+      let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+      if (currentGender === 'male') {
+        bmr += 5;
+      } else {
+        bmr -= 161;
+      }
+
+      // 2. TDEE
+      const tdee = bmr * activityMult;
+
+      // 3. Target Kalori (Batas minimum sehat: 1200 kcal wanita, 1500 kcal pria)
+      let targetCal = tdee + goalOffset;
+      const minSafeCal = currentGender === 'male' ? 1400 : 1100;
+      if (targetCal < minSafeCal) targetCal = minSafeCal;
+
+      // 4. BMI (Asia-Pasifik Standard)
+      const heightMeter = height / 100;
+      const bmi = weight / (heightMeter * heightMeter);
+      
+      let bmiCategory = 'Normal';
+      let bmiBadgeClass = 'tag-green';
+      let pointerPos = 40; // persentase visual
+
+      if (bmi < 18.5) {
+        bmiCategory = 'Berat Rendah';
+        bmiBadgeClass = 'tag-blue';
+        pointerPos = Math.max(5, (bmi / 18.5) * 25);
+      } else if (bmi < 23.0) {
+        bmiCategory = 'Normal (Ideal)';
+        bmiBadgeClass = 'tag-green';
+        pointerPos = 25 + ((bmi - 18.5) / 4.5) * 30;
+      } else if (bmi < 25.0) {
+        bmiCategory = 'Kelebihan BB';
+        bmiBadgeClass = 'tag-orange';
+        pointerPos = 55 + ((bmi - 23.0) / 2.0) * 20;
+      } else if (bmi < 30.0) {
+        bmiCategory = 'Obesitas Tk. 1';
+        bmiBadgeClass = 'tag-red';
+        pointerPos = 75 + ((bmi - 25.0) / 5.0) * 15;
+      } else {
+        bmiCategory = 'Obesitas Tk. 2';
+        bmiBadgeClass = 'tag-red';
+        pointerPos = Math.min(95, 90 + ((bmi - 30.0) / 10.0) * 8);
+      }
+
+      // Berat Badan Ideal (Rentang BMI 18.5 - 22.9)
+      const idealMin = (18.5 * heightMeter * heightMeter).toFixed(1);
+      const idealMax = (22.9 * heightMeter * heightMeter).toFixed(1);
+
+      // 5. Rekomendasi Makronutrisi
+      // Target Protein: bila defisit kalori, protein lebih tinggi (1.8 - 2.0g/kg) agar otot terjaga. Bila normal 1.5g/kg
+      let proteinPerKg = 1.6;
+      if (goalOffset < 0) proteinPerKg = 1.9;
+      if (goalOffset > 0) proteinPerKg = 1.8;
+
+      let proteinGram = Math.round(weight * proteinPerKg);
+      let proteinKcal = proteinGram * 4;
+
+      // Lemak: 25% dari target kalori
+      let fatKcal = Math.round(targetCal * 0.25);
+      let fatGram = Math.round(fatKcal / 9);
+
+      // Sisa untuk Karbohidrat
+      let carbKcal = targetCal - proteinKcal - fatKcal;
+      if (carbKcal < (targetCal * 0.2)) {
+        // Fallback jika defisit terlalu ketat
+        carbKcal = targetCal * 0.35;
+        proteinKcal = targetCal * 0.40;
+        fatKcal = targetCal * 0.25;
+        proteinGram = Math.round(proteinKcal / 4);
+        fatGram = Math.round(fatKcal / 9);
+      }
+      let carbGram = Math.round(carbKcal / 4);
+
+      // Persentase Macro Bar
+      const totalMacroCal = proteinKcal + fatKcal + carbKcal;
+      const pctProt = Math.round((proteinKcal / totalMacroCal) * 100);
+      const pctFat = Math.round((fatKcal / totalMacroCal) * 100);
+      const pctCarb = 100 - pctProt - pctFat;
+
+      // 6. Kebutuhan Air (ml = berat * 35 ml + aktivitas ekstra)
+      let waterMl = weight * 35;
+      if (activityMult >= 1.55) waterMl += 500;
+      if (activityMult >= 1.725) waterMl += 500;
+      const waterLiter = (waterMl / 1000).toFixed(1);
+      const waterGlass = Math.round(waterMl / 250);
+
+      // Render Hasil ke UI
+      document.getElementById('res-target-cal').textContent = formatNumber(targetCal);
+      document.getElementById('res-bmr').innerHTML = `${formatNumber(bmr)} <span style="font-size:12px; font-weight: normal;">kkal</span>`;
+      document.getElementById('res-tdee').innerHTML = `${formatNumber(tdee)} <span style="font-size:12px; font-weight: normal;">kkal</span>`;
+
+      // BMI Elements
+      document.getElementById('res-bmi-val').textContent = bmi.toFixed(1);
+      const bmiBadgeEl = document.getElementById('res-bmi-badge');
+      bmiBadgeEl.textContent = bmiCategory;
+      bmiBadgeEl.className = `tag ${bmiBadgeClass}`;
+      document.getElementById('res-ideal-weight').textContent = `Ideal: ${idealMin} - ${idealMax} kg`;
+      document.getElementById('bmi-pointer').style.left = `${pointerPos}%`;
+
+      // Macros Elements
+      document.getElementById('bar-prot').style.width = `${pctProt}%`;
+      document.getElementById('bar-carb').style.width = `${pctCarb}%`;
+      document.getElementById('bar-fat').style.width = `${pctFat}%`;
+
+      document.getElementById('res-prot').textContent = `${proteinGram}g`;
+      document.getElementById('res-prot-cal').textContent = `${formatNumber(proteinKcal)} kkal (${pctProt}%)`;
+
+      document.getElementById('res-carb').textContent = `${carbGram}g`;
+      document.getElementById('res-carb-cal').textContent = `${formatNumber(carbKcal)} kkal (${pctCarb}%)`;
+
+      document.getElementById('res-fat').textContent = `${fatGram}g`;
+      document.getElementById('res-fat-cal').textContent = `${formatNumber(fatKcal)} kkal (${pctFat}%)`;
+
+      // Water
+      document.getElementById('res-water-liter').textContent = waterLiter;
+      document.getElementById('res-water-glass').textContent = waterGlass;
+
+      // Goal note
+      let note = 'Mempertahankan berat badan saat ini secara stabil.';
+      if (goalOffset <= -500) note = 'Defisit tinggi: prioritaskan cukup protein & tidur nyenyak.';
+      else if (goalOffset < 0) note = 'Defisit moderat yang nyaman & minim kehilangan otot.';
+      else if (goalOffset >= 500) note = 'Surplus tinggi untuk percepatan peningkatan massa tubuh.';
+      else if (goalOffset > 0) note = 'Surplus terukur untuk pembentukan massa otot kering (lean).';
+      document.getElementById('res-goal-note').textContent = note;
+
+      // Render Tab Porsi Makan
+      renderMealPlan(targetCal, proteinGram);
+
+      // Simpan input terakhir ke localStorage
+      try {
+        const lastInput = { currentGender, age, height, weight, activityMult, goalOffset };
+        localStorage.setItem(LAST_INPUT_KEY, JSON.stringify(lastInput));
+      } catch (e) {
+        console.warn('Gagal menyimpan lastInput:', e);
+      }
+
+      // Simpan riwayat jika tombol 'Hitung' ditekan
+      if (shouldSave) {
+        saveHistoryItem({
+          date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+          weight,
+          height,
+          bmi: bmi.toFixed(1),
+          bmiCategory,
+          targetCal: Math.round(targetCal),
+          prot: proteinGram,
+          water: waterLiter
+        });
+        showToast('Hasil berhasil dihitung & dicatat!');
+      }
+    }
+
+    // Render Tab Pola Makan
+    function renderMealPlan(totalCal, totalProt) {
+      document.getElementById('split-total-badge').textContent = `${formatNumber(totalCal)} kkal`;
+
+      const bfastCal = Math.round(totalCal * 0.25);
+      const lunchCal = Math.round(totalCal * 0.35);
+      const dinnerCal = Math.round(totalCal * 0.30);
+      const snackCal = totalCal - bfastCal - lunchCal - dinnerCal;
+
+      document.getElementById('meal-bfast').textContent = `${formatNumber(bfastCal)} kkal`;
+      document.getElementById('meal-lunch').textContent = `${formatNumber(lunchCal)} kkal`;
+      document.getElementById('meal-dinner').textContent = `${formatNumber(dinnerCal)} kkal`;
+      document.getElementById('meal-snack').textContent = `${formatNumber(snackCal)} kkal`;
+
+      document.getElementById('meal-bfast-prot').textContent = `±${Math.round(totalProt * 0.25)}g Prot`;
+      document.getElementById('meal-lunch-prot').textContent = `±${Math.round(totalProt * 0.35)}g Prot`;
+      document.getElementById('meal-dinner-prot').textContent = `±${Math.round(totalProt * 0.30)}g Prot`;
+      document.getElementById('meal-snack-prot').textContent = `±${Math.round(totalProt * 0.10)}g Prot`;
+    }
+
+    // Local Storage Riwayat
+    function getHistory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveHistoryItem(item) {
+      try {
+        const list = getHistory();
+        list.unshift(item);
+        if (list.length > 20) list.pop(); // simpan maks 20 entri
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      } catch (e) {
+        console.warn('Gagal menyimpan riwayat:', e);
+      }
+    }
+
+    function clearHistory() {
+      if (confirm('Yakin ingin menghapus semua riwayat catatan?')) {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+          renderHistory();
+          showToast('Riwayat berhasil dibersihkan.');
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+
+    function deleteHistoryItem(index) {
+      try {
+        const list = getHistory();
+        list.splice(index, 1);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        renderHistory();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderHistory() {
+      const listContainer = document.getElementById('history-list');
+      const data = getHistory();
+
+      if (!data || data.length === 0) {
+        listContainer.innerHTML = `
+          <div class="card" style="text-align: center; padding: 30px 16px;">
+            <div style="font-size: 32px; margin-bottom: 8px;">📑</div>
+            <p style="font-size: 14px; font-weight: 600; color: #fff;">Belum ada riwayat tercatat</p>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Klik tombol "Hitung & Simpan Riwayat" pada kalkulator untuk menyimpan data.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      data.forEach((item, index) => {
+        html += `
+          <div class="history-item">
+            <div class="history-info">
+              <h4>${item.weight} kg • ${item.bmiCategory}</h4>
+              <p>📅 ${item.date} | TB: ${item.height} cm | Prot: ${item.prot}g</p>
+            </div>
+            <div style="display:flex; align-items:center; gap: 12px;">
+              <div class="history-badge">
+                <div class="history-cal">${formatNumber(item.targetCal)} <span style="font-size:10px;">kkal</span></div>
+                <div class="history-bmi">BMI: ${item.bmi}</div>
+              </div>
+              <button onclick="deleteHistoryItem(${index})" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:14px; padding:4px;">✕</button>
+            </div>
+          </div>
+        `;
+      });
+
+      listContainer.innerHTML = html;
+    }
+
+    // Load State awal
+    function loadSavedInput() {
+      try {
+        const saved = localStorage.getItem(LAST_INPUT_KEY);
+        if (saved) {
+          const d = JSON.parse(saved);
+          if (d.currentGender) setGender(d.currentGender);
+          if (d.age) document.getElementById('inp-age').value = d.age;
+          if (d.height) document.getElementById('inp-height').value = d.height;
+          if (d.weight) document.getElementById('inp-weight').value = d.weight;
+          if (d.activityMult) document.getElementById('inp-activity').value = d.activityMult;
+          if (d.goalOffset !== undefined) document.getElementById('inp-goal').value = d.goalOffset;
+        }
+      } catch (e) {
+        console.warn('Gagal membaca saved input:', e);
+      }
+    }
+
+    // Event listener untuk auto-recalculate realtime
+    ['inp-age', 'inp-height', 'inp-weight', 'inp-activity', 'inp-goal'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', () => calculateAll(false));
+        el.addEventListener('change', () => calculateAll(false));
+      }
+    });
+
+    // Inisialisasi awal saat load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedInput();
+      calculateAll(false);
+    });
+  </script>
+</body>
+</html>
